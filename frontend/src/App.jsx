@@ -46,17 +46,22 @@ function App() {
         body: formData,
       });
 
-      const data = await response.json();
 
       if (!response.ok) {
         throw new Error("PDF upload failed.");
       }
 
-      setDocumentId(data.documentId);
-      setUploadedFileName(data.fileName || selectedFile.name);
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error( "PDF upload failed.");
+      }
+
+      setDocumentId(data.data.documentId);
+      setUploadedFileName(data.data.fileName || selectedFile.name);
 
       setStatus(
-        `${data.message} ${data.chunks || 0} chunks created.`
+        `${data.message} ${data.data.chunks || 0} chunks created.`
       );
     } catch (err) {
       setError(err.message || "Failed to upload PDF.");
@@ -85,14 +90,21 @@ function App() {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error("Something went wrong.");
+        const errorText = await response.text();
+        throw new Error(errorText || "Something went wrong.");
       }
 
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Something went wrong.");
+      }
+
+      setAnswer(data.data.answer || "No answer returned.");
+
     } catch (err) {
-      setError("Failed to get an answer.");
+      setError(err.message || "Failed to get an answer.");
     } finally {
       setLoading(false);
     }
