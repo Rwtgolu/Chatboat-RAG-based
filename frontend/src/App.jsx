@@ -13,7 +13,6 @@ function App() {
   const [activeNav,setActiveNav]=useState("ask");
   const [selectedFile,setSelectedFile]= useState(null);
   const [uploadedFileName,setUploadedFileName]= useState("");
-  const [documentId,setDocumentId]= useState("");
   const [uploading,setUploading]= useState(false);
   const [question,setQuestion]= useState("");
   const [answer,setAnswer]= useState("");
@@ -33,7 +32,6 @@ function App() {
     }
     setSelectedFile(file);
     setUploadedFileName("");
-    setDocumentId("");
     setAnswer("");
     setError("");
     setStatus("");
@@ -52,7 +50,6 @@ function App() {
       if (!response.ok) throw new Error("PDF upload failed.");
       const data = await response.json();
       if (!data.success) throw new Error("PDF upload failed.");
-      setDocumentId(data.data.documentId);
       setUploadedFileName(data.data.fileName || selectedFile.name);
       setStatus(`${data.message} ${data.data.chunks || 0} chunks created.`);
     } catch (err) {
@@ -73,7 +70,7 @@ function App() {
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: question, documentId }),
+        body: JSON.stringify({ input: question}),
       });
       if (!response.ok) {
         const errorText = await response.text();

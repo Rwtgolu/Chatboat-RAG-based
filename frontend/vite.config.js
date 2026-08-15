@@ -8,11 +8,11 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/upload-pdf': {
-        target: 'http://localhost:6000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/ai': {
-        target: 'http://localhost:6000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
     },
