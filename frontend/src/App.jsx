@@ -1,68 +1,60 @@
 import { useState } from "react";
+import Sidebar       from "./components/Sidebar/Sidebar";
+import HeroSection   from "./components/Main/HeroSection";
+import UploadSection from "./components/Main/UploadSection";
+import FeatureCards  from "./components/Main/FeatureCards";
+import QuestionForm  from "./components/Main/QuestionForm";
+import AnswerPanel   from "./components/Main/AnswerPanel";
 
-const API_URL = "/ai";
+const API_URL    = "/ai";
 const UPLOAD_URL = "/upload-pdf";
 
 function App() {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
-  const [status, setStatus] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadedFileName, setUploadedFileName] = useState("");
-  const [documentId, setDocumentId] = useState("");
+  const [activeNav,setActiveNav]=useState("ask");
+  const [selectedFile,setSelectedFile]= useState(null);
+  const [uploadedFileName,setUploadedFileName]= useState("");
+  const [documentId,setDocumentId]= useState("");
+  const [uploading,setUploading]= useState(false);
+  const [question,setQuestion]= useState("");
+  const [answer,setAnswer]= useState("");
+  const [loading,setLoading]= useState(false);
+  const [error,setError]= useState("");
+  const [status,setStatus]= useState("");
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-
-    setSelectedFile(file || null);
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      setError("Only PDF files are supported.");
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      setError("File size must be under 50MB.");
+      return;
+    }
+    setSelectedFile(file);
     setUploadedFileName("");
     setDocumentId("");
     setAnswer("");
     setError("");
     setStatus("");
-
-    if (file && file.type !== "application/pdf") {
-      setSelectedFile(null);
-      setError("Only PDF files are allowed.");
-    }
   };
 
   const handleUpload = async () => {
-
+    if (!selectedFile) return;
     const formData = new FormData();
     formData.append("pdf", selectedFile);
-
     setUploading(true);
     setError("");
     setStatus("");
     setAnswer("");
-
     try {
-      const response = await fetch(UPLOAD_URL, {
-        method: "POST",
-        body: formData,
-      });
-
-
-      if (!response.ok) {
-        throw new Error("PDF upload failed.");
-      }
-
+      const response = await fetch(UPLOAD_URL, { method: "POST", body: formData });
+      if (!response.ok) throw new Error("PDF upload failed.");
       const data = await response.json();
-
-      if (!data.success) {
-        throw new Error( "PDF upload failed.");
-      }
-
+      if (!data.success) throw new Error("PDF upload failed.");
       setDocumentId(data.data.documentId);
       setUploadedFileName(data.data.fileName || selectedFile.name);
-
-      setStatus(
-        `${data.message} ${data.data.chunks || 0} chunks created.`
-      );
+      setStatus(`${data.message} ${data.data.chunks || 0} chunks created.`);
     } catch (err) {
       setError(err.message || "Failed to upload PDF.");
     } finally {
@@ -70,39 +62,26 @@ function App() {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!question.trim() || !uploadedFileName) return;
     setLoading(true);
     setError("");
     setAnswer("");
     setStatus("");
-
     try {
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: question,
-          documentId: documentId,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: question, documentId }),
       });
-
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || "Something went wrong.");
       }
-
       const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Something went wrong.");
-      }
-
+      if (!data.success) throw new Error(data.error || "Something went wrong.");
       setAnswer(data.data.answer || "No answer returned.");
-
     } catch (err) {
       setError(err.message || "Failed to get an answer.");
     } finally {
@@ -111,91 +90,45 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
-      <div className="chat-card">
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
 
-        <header className="header">
-          <div>
-            <p className="eyebrow">Document Assistant</p>
-            <h1>Ask your PDF</h1>
-          </div>
-        </header>
+      <main className="flex flex-1 flex-col gap-5 overflow-y-auto bg-dark-base px-8 py-7 scrollbar-thin">
+        <HeroSection />
 
-        <div className="upload-box">
-
-          <label htmlFor="pdf-upload" className="upload-label">
-            Select PDF
-          </label>
-
-          <input
-            id="pdf-upload"
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-          />
-
-          <button
-            type="button"
-            className="secondary-btn"
-            onClick={handleUpload}
-            disabled={uploading || !selectedFile}
-          >
-            {uploading ? "Uploading..." : "Upload PDF"}
-          </button>
-
-          {uploadedFileName && (
-            <p className="file-name">
-              Uploaded: {uploadedFileName}
-            </p>
-          )}
-
-        </div>
-
-        {status && !error && (
-          <div className="message success">
-            {status}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="prompt-form">
-
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            rows="5"
-            placeholder="Ask a question about the uploaded document..."
-          />
-
-          <button
-            type="submit"
-            disabled={loading || !uploadedFileName}
-          >
-            {loading ? "Thinking..." : "Ask Question"}
-          </button>
-
-        </form>
+        <UploadSection
+          selectedFile={selectedFile}
+          uploadedFileName={uploadedFileName}
+          uploading={uploading}
+          status={status}
+          error={error}
+          onFileSelect={handleFileSelect}
+          onUpload={handleUpload}
+        />
 
         {error && (
-          <div className="message error">
+          <div className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8"  x2="12"    y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
             {error}
           </div>
         )}
 
-        <div className="answer-box">
+        <FeatureCards />
 
-          <h2>Answer</h2>
+        <QuestionForm
+          question={question}
+          loading={loading}
+          uploadedFileName={uploadedFileName}
+          onQuestionChange={setQuestion}
+          onSubmit={handleSubmit}
+        />
 
-          {answer ? (
-            <p>{answer}</p>
-          ) : (
-            <p className="placeholder">
-              Your answer will appear here.
-            </p>
-          )}
-
-        </div>
-
-      </div>
+        <AnswerPanel answer={answer} loading={loading} />
+      </main>
     </div>
   );
 }
