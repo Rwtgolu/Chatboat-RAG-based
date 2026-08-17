@@ -1,6 +1,7 @@
 import { indexPdfFile } from "../services/pdfProcessor.js";
 import { similaritySearch } from "../services/vectorStore.js";
 import { generateAnswer } from "../services/aiService.js";
+import { response } from "express";
 
 export const getHealth = (req, res) => {
   console.log("hey");
@@ -12,20 +13,19 @@ export const uploadPdfHandler = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, error: "No file uploaded." });
     }
-
     const chunks = await indexPdfFile(req.file.path);
-
     return res.status(200).json({
       success: true,
       message: "PDF uploaded and indexed successfully.",
-      data: {
+       data: {
         fileName: req.file.originalname,
         chunks,
       },
+     
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return res.status(500).json({ success: false, error: error.message || "Upload failed." });
+    return res.status(500).json({ success: false, error:  "Upload failed." });
   }
 };
 
@@ -48,6 +48,6 @@ export const aiHandler = async (req, res) => {
     });
   } catch (error) {
     console.error("AI error:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: "ai error "});
   }
 };

@@ -12,6 +12,7 @@ const extractText = async (pdfPath) => {
 
   const result = await pdfParse(buffer);
 
+
   if (!result.text) {
     throw new Error("Failed to extract text from PDF");
   }

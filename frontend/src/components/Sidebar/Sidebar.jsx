@@ -1,5 +1,4 @@
 import NavItem from "./NavItem";
-import UpgradeCard from "./UpgradeCard";
 import UserProfile from "./UserProfile";
 
 const NAV_ITEMS = [
@@ -58,7 +57,6 @@ function Sidebar({ activeNav, onNavChange }) {
         ))}
       </nav>
 
-      <UpgradeCard />
       <UserProfile />
     </aside>
   );
