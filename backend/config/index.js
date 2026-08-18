@@ -14,7 +14,7 @@ export const config = {
   qdrantUrl: process.env.QDRANT_URL,
   
 
-  groqModel: "llama-3.3-70b-versatile",
+  groqModel: "openai/gpt-oss-120b",
   groqTemperature: 0,
   groqMaxTokens: 1024,
   groqMaxRetries: 2,
