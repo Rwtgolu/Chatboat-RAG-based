@@ -1,5 +1,6 @@
 import { ChatGroq } from "@langchain/groq";
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+// import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { OllamaEmbeddings } from "@langchain/ollama";
 import { config } from "../config/index.js";
 
 const llm = new ChatGroq({
@@ -10,10 +11,8 @@ const llm = new ChatGroq({
   maxRetries: config.groqMaxRetries,
 });
 
-const embeddings = new GoogleGenerativeAIEmbeddings({
-  model: "gemini-embedding-001", 
-  taskType: "RETRIEVAL_DOCUMENT",
-  title: "Document title",
+const embeddings = new OllamaEmbeddings({
+    model: "nomic-embed-text",
 });
 
 

@@ -33,7 +33,7 @@ export const aiHandler = async (req, res) => {
   try {
     const { input } = req.body;
 
-    if (!input || !input.trim()) {
+    if (!input) {
       return res.status(400).json({ success: false, error: "Input question is required." });
     }
 

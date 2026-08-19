@@ -19,7 +19,7 @@ export const config = {
   groqMaxTokens: 1024,
   groqMaxRetries: 2,
   
-  collectionName: "gauravrawat",
+  collectionName: "gaurav",
   
 
   chunkSize: 500,

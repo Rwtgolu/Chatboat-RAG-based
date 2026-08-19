@@ -36,7 +36,10 @@ const chunkText = async (text) => {
 
 export const indexPdfFile = async (pdfPath) => {
   const text = await extractText(pdfPath);
+  // console.log("text complete")
   const documents = await chunkText(text);
+  // console.log("document complete")
   await addDocuments(documents);
+  // console.log("document add")
   return documents.length;
 };
