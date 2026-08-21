@@ -15,7 +15,7 @@ export const config = {
   
  cohereApiKey: process.env.COHERE_API_KEY,
   retrieveK: 25,      
-  rerankTopN: 5, 
+
 
   groqModel: "openai/gpt-oss-120b",
   groqTemperature: 0,

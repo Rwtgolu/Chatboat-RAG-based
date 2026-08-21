@@ -24,14 +24,13 @@ export const addDocuments = async (documents) => {
   return vectorStore;
 };
 
-// Wide retrieval — pull more candidates than you'll actually use
 export const similaritySearch = async (query, k = config.similaritySearchK) => {
   const vectorStore = await getVectorStore();
   return vectorStore.similaritySearch(query, k);
 };
 
-// Re-rank a set of LangChain Document objects against the query
-export const rerankDocuments = async (query, documents, topN = config.rerankTopN || 5) => {
+
+export const rerankDocuments = async (query, documents, topN = 10) => {
   if (documents.length === 0) return [];
 
   const response = await cohere.rerank({
@@ -41,7 +40,7 @@ export const rerankDocuments = async (query, documents, topN = config.rerankTopN
     topN,
   });
 
-  // Map reranked indices back to original Document objects (with metadata intact)
+
   return response.results.map((r) => ({
     ...documents[r.index],
     pageContent: documents[r.index].pageContent,
@@ -50,11 +49,10 @@ export const rerankDocuments = async (query, documents, topN = config.rerankTopN
   }));
 };
 
-// Combined retrieve + rerank — this is what your QA endpoint should call
 export const retrieveAndRerank = async (
   query,
-  retrieveK = config.retrieveK || 25,
-  rerankTopN = config.rerankTopN || 5
+  retrieveK = 25,
+  rerankTopN =  5
 ) => {
   const candidates = await similaritySearch(query, retrieveK);
   return rerankDocuments(query, candidates, rerankTopN);
