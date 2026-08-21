@@ -4,6 +4,16 @@ A full-stack chatbot application that lets users upload documents and ask
 questions about their content. The system uses **Retrieval-Augmented Generation (RAG)** powered by 
 **LangChain** to retrieve relevant context from uploaded documents and generate accurate, grounded answers.
 
+Implemented re ranking which increse the ans quality and context of the question 
+
+## without re ranking ans is 
+![alt text](<Screenshot 2026-08-21 at 4.50.34 PM.png>)
+
+
+## with re ranking ans is 
+![alt text](<Screenshot 2026-08-21 at 4.46.27 PM.png>)
+
+
 ## Features
 
 -  Upload and process documents (PDF)
@@ -11,7 +21,6 @@ questions about their content. The system uses **Retrieval-Augmented Generation 
 -  Conversational chatbot interface with context-aware responses
 -  RAG pipeline built with LangChain for accurate, source-grounded answers
 -  Fast, responsive React-based frontend
--  Chat history and multi-document support
 
 ## Tech Stack
 
@@ -23,8 +32,8 @@ questions about their content. The system uses **Retrieval-Augmented Generation 
 - Node.js
 - LangChain (JS)
 - Retrieval-Augmented Generation (RAG) pipeline
-- Vector database for embeddings (e.g., Pinecone / Chroma / FAISS)
-- LLM provider (e.g., OpenAI / Anthropic API)
+- Vector database for embeddings (e.g., qadrent)
+- LLM provider (e.g., ollama,gemini,groq)
 
 
 
@@ -42,7 +51,7 @@ questions about their content. The system uses **Retrieval-Augmented Generation 
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- npm or yarn
+- npm 
 - API key for your chosen LLM provider (e.g., OpenAI)
 - Vector database setup (local or cloud)
 
@@ -74,6 +83,8 @@ questions about their content. The system uses **Retrieval-Augmented Generation 
    OPENAI_API_KEY=your_api_key_here
    VECTOR_DB_URL=your_vector_db_url
    ```
+5. install ollama in your system
+   install ollama from chrome which your os support 
 
 ### Running the App
 
@@ -87,6 +98,11 @@ npm start
 ```bash
 cd frontend
 npm run dev
+```
+
+**Start the ollama**
+```bash
+ollama serve
 ```
 
 
@@ -104,8 +120,8 @@ npm run dev
 - Authentication and per-user document storage
 - Support for additional file types (images, spreadsheets)
 - Citation highlighting for source-grounded answers
--Improvement in frontend ui
+- Improvement in frontend ui
 - login and sigup based and history save
 - improving the rag and llm ans
 - Use diffrent way of chunkking and better prompt for llm
-- 
+- re ranking 
