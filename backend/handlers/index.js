@@ -2,6 +2,7 @@ import { indexPdfFile } from "../services/pdfProcessor.js";
 import { similaritySearch } from "../services/vectorStore.js";
 import { generateAnswer } from "../services/aiService.js";
 import { response } from "express";
+import { retrieveAndRerank } from "../services/vectorStore.js";
 
 export const getHealth = (req, res) => {
   console.log("hey");
@@ -37,8 +38,10 @@ export const aiHandler = async (req, res) => {
       return res.status(400).json({ success: false, error: "Input question is required." });
     }
 
-    const docs = await similaritySearch(input);
-    const context = docs.map((doc) => doc.pageContent).join("\n\n");
+    // const docs = await similaritySearch(input);
+    // const context = docs.map((doc) => doc.pageContent).join("\n\n");
+     const rerankedDocs = await retrieveAndRerank(input);
+  const context = rerankedDocs.map((d) => d.pageContent).join("\n\n---\n\n");
     const answer = await generateAnswer(context, input);
 
 
